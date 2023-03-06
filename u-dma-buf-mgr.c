@@ -51,7 +51,7 @@ MODULE_DESCRIPTION("U-dma-buf(User space mappable DMA buffer device driver) Mana
 MODULE_AUTHOR("ikwzm");
 MODULE_LICENSE("Dual BSD/GPL");
 
-#define DRIVER_VERSION     "4.3.0-rc1"
+#define DRIVER_VERSION     "4.3.0-rc3"
 #define DRIVER_NAME        "u-dma-buf-mgr"
 
 /**
@@ -132,11 +132,25 @@ static void udmabuf_manager_state_clear(struct udmabuf_manager_data *this)
     this->device_name   = NULL;
     this->minor_number  = PLATFORM_DEVID_AUTO;
     this->size          = 0;
+    this->option        = 0;
     this->parent        = NULL;
     this->state         = udmabuf_manager_init_state;
     this->buffer_offset = 0;
     this->parse         = this->buffer;
 }
+
+/**
+ * define option fields.
+ */
+#define DEFINE_CREATE_OPTION_FIELD(name,lo,hi)                \
+static inline u64 CREATE_OPTION_##name(u64 option, int value) \
+{                                                             \
+    const u64 mask_bit = ((1 << ((hi)-(lo)+1))-1);            \
+    const u64 clr_bit  = ((          mask_bit) << (lo));      \
+          u64 set_bit  = (((value) & mask_bit) << (lo));      \
+    return (option & ~clr_bit) | set_bit;                     \
+}
+DEFINE_CREATE_OPTION_FIELD(DMA_MASK_SIZE,0,7)
 
 /**
  * udmabuf_manager_supported_bus_type_list - udmabuf manager supported bus type list.
@@ -277,6 +291,18 @@ static int udmabuf_manager_parse(struct udmabuf_manager_data *this, const char _
                         this->state = udmabuf_manager_parse_error;
                         goto failed;
                     }
+                    continue;
+                }
+                if (strncmp(ptr, "dma-mask=", 9) == 0) {
+                    if (kstrtoull(ptr+9, 0, &value) != 0) {
+                        this->state = udmabuf_manager_parse_error;
+                        goto failed;
+                    }
+                    if (value > 0xFF) {
+                        this->state = udmabuf_manager_parse_error;
+                        goto failed;
+                    }
+                    this->option = CREATE_OPTION_DMA_MASK_SIZE(this->option, value);
                     continue;
                 }
                 if (kstrtoull(ptr, 0, &value) == 0) {

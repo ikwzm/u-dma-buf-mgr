@@ -55,7 +55,7 @@ shell$ sudo sh -c "echo 'create udmabuf9 0x10000 bus=pci device=0000:00:18.7' > 
 
 #### Synopsis for writing /dev/u-dma-buf-mgr
 
-```create <device-name> <size> [bus=<bus>] [device=<device>]```
+```create <device-name> <size> [bus=<bus>] [device=<device>] [dma-mask=<dma-mask-size>]```
 
 ##### `device-name`
 
@@ -69,13 +69,18 @@ The `size` argment is mandatory.
 
 ##### `device` option
 
-The device option specifies the parent device of u-dma-buf.
-If the device option is omitted, it creates its own platform device.
+The `device` option specifies the parent device of u-dma-buf.
+If the `device` option is omitted, it creates its own platform device.
 
 ##### `bus` option
 
-The bus option specifies the bus to search for the device specified by the device option.
-If the bus option is omitted, the platform bus is searched.
+The `bus` option specifies the bus to search for the device specified by the device option.
+If the `bus` option is omitted, the platform bus is searched.
+
+##### `dma-mask` option
+
+The `dma-mask` option specifies the number of bits in the dma mask value.
+If the parent device is specified by the `device` option, the `dma-mask` option is ignored because the dma-mask set for the parent device takes precedence.
 
 ### Delete u-dma-buf
 
