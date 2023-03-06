@@ -58,8 +58,6 @@ ifndef OBJ_MODULES
   endif
 endif
 
-KBUILD_CFLAGS += -DU_DMA_BUF_IN_KERNEL_FUNCTIONS=y
-
 #
 # For out of kernel tree rules
 #
