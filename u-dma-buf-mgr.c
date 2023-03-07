@@ -51,7 +51,7 @@ MODULE_DESCRIPTION("U-dma-buf(User space mappable DMA buffer device driver) Mana
 MODULE_AUTHOR("ikwzm");
 MODULE_LICENSE("Dual BSD/GPL");
 
-#define DRIVER_VERSION     "4.3.0-rc4"
+#define DRIVER_VERSION     "4.3.0-rc5"
 #define DRIVER_NAME        "u-dma-buf-mgr"
 
 /**
@@ -155,26 +155,29 @@ DEFINE_CREATE_OPTION_FIELD(DMA_MASK_SIZE,0,7)
 /**
  * udmabuf_manager_supported_bus_type_list - udmabuf manager supported bus type list.
  */
-#ifdef CONFIG_ARM_AMBA
-extern struct bus_type amba_bustype;
+#if defined(CONFIG_ARM_AMBA) && (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 18, 0))
+extern struct bus_type      amba_bustype;
+#define AMBA_BUS_TYPE      &amba_bustype,
+#else
+#define AMBA_BUS_TYPE
 #endif
-#ifdef CONFIG_PCI
-extern struct bus_type pci_bus_type;
+#if defined(CONFIG_PCI)
+extern struct bus_type      pci_bus_type;
+#define PCI_BUS_TYPE       &pci_bus_type,
+#else
+#define PCI_BUS_TYPE
 #endif
-#ifdef CONFIG_PCIEPORTBUS
-extern struct bus_type pcie_port_bus_type;
+#if defined(CONFIG_PCIEPORTBUS)
+extern struct bus_type      pcie_port_bus_type;
+#define PCIE_PORT_BUS_TYPE &pcie_port_bus_type,
+#else
+#define PCIE_PORT_BUS_TYPE 
 #endif
 
 static struct bus_type* udmabuf_manager_supported_bus_type_list[] = {
-#ifdef CONFIG_ARM_AMBA
-    &amba_bustype,
-#endif
-#ifdef CONFIG_PCI
-    &pci_bus_type,
-#endif
-#ifdef CONFIG_PCIEPORTBUS
-    &pcie_port_bus_type,
-#endif
+    AMBA_BUS_TYPE
+    PCI_BUS_TYPE
+    PCIE_PORT_BUS_TYPE
     NULL
 };
 
