@@ -51,19 +51,21 @@ MODULE_DESCRIPTION("U-dma-buf(User space mappable DMA buffer device driver) Mana
 MODULE_AUTHOR("ikwzm");
 MODULE_LICENSE("Dual BSD/GPL");
 
-#define DRIVER_VERSION     "4.3.0-rc5"
+#define DRIVER_VERSION     "4.3.0-rc6"
 #define DRIVER_NAME        "u-dma-buf-mgr"
 
 /**
  * DOC: u-dma-buf Device In-Kernel Interface
  *
- * * u_dma_buf_device_search() - Search u-dma-buf device by name or id.
- * * u_dma_buf_device_create() - Create u-dma-buf device for in-kernel.
- * * u_dma_buf_device_remove() - Remove u-dma-buf device for in-kernel.
+ * * u_dma_buf_device_search()           - Search u-dma-buf device by name or id.
+ * * u_dma_buf_device_create()           - Create u-dma-buf device for in-kernel.
+ * * u_dma_buf_device_remove()           - Remove u-dma-buf device for in-kernel.
+ * * u_dma_buf_find_available_bus_type() - Find available bus_type by name.
  */
-struct device* u_dma_buf_device_search(const char* name, int id);
-struct device* u_dma_buf_device_create(const char* name, int id, size_t size, u64 option, struct device* parent);
-int            u_dma_buf_device_remove(struct device *dev);
+struct device*   u_dma_buf_device_search(const char* name, int id);
+struct device*   u_dma_buf_device_create(const char* name, int id, size_t size, u64 option, struct device* parent);
+int              u_dma_buf_device_remove(struct device *dev);
+struct bus_type* u_dma_buf_find_available_bus_type(char* name, int name_len);
 
 /**
  * DOC: udmabuf manager device
@@ -153,55 +155,6 @@ static inline u64 CREATE_OPTION_##name(u64 option, int value) \
 DEFINE_CREATE_OPTION_FIELD(DMA_MASK_SIZE,0,7)
 
 /**
- * udmabuf_manager_supported_bus_type_list - udmabuf manager supported bus type list.
- */
-#if defined(CONFIG_ARM_AMBA) && (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 18, 0))
-extern struct bus_type      amba_bustype;
-#define AMBA_BUS_TYPE      &amba_bustype,
-#else
-#define AMBA_BUS_TYPE
-#endif
-#if defined(CONFIG_PCI)
-extern struct bus_type      pci_bus_type;
-#define PCI_BUS_TYPE       &pci_bus_type,
-#else
-#define PCI_BUS_TYPE
-#endif
-#if defined(CONFIG_PCIEPORTBUS)
-extern struct bus_type      pcie_port_bus_type;
-#define PCIE_PORT_BUS_TYPE &pcie_port_bus_type,
-#else
-#define PCIE_PORT_BUS_TYPE 
-#endif
-
-static struct bus_type* udmabuf_manager_supported_bus_type_list[] = {
-    AMBA_BUS_TYPE
-    PCI_BUS_TYPE
-    PCIE_PORT_BUS_TYPE
-    NULL
-};
-
-/**
- * udmabuf_manager_parse_bus_type() - udmabuf manager parse bus type
- * @ptr:        Pointer to the parse string.
- * Return:      Pointer to found bus type or NULL.
- */
-static struct bus_type* udmabuf_manager_parse_bus_type(char* ptr)
-{
-    int i;
-    for (i = 0; udmabuf_manager_supported_bus_type_list[i] != NULL; i++) {
-        const char* bus_name     = udmabuf_manager_supported_bus_type_list[i]->name;
-        int         bus_name_len = strlen(bus_name);
-        if (strncmp(ptr, bus_name, bus_name_len) == 0)
-            break;
-    }
-    if (udmabuf_manager_supported_bus_type_list[i] != NULL)
-        return udmabuf_manager_supported_bus_type_list[i];
-    else
-        return NULL;
-}
-
-/**
  * udmabuf_manager_parse() - udmabuf manager parse buffer.
  * @this:       Pointer to the udmabuf manager data structure.
  * @buff:       Pointer to the user buffer.
@@ -281,7 +234,9 @@ static int udmabuf_manager_parse(struct udmabuf_manager_data *this, const char _
                     continue;
                 }
                 if (strncmp(ptr, "bus=", 4) == 0) {
-                    bus_type = udmabuf_manager_parse_bus_type(ptr+4);
+                    char* bus_name     = ptr+4;
+                    int   bus_name_len = strlen(bus_name);
+                    bus_type = u_dma_buf_find_available_bus_type(bus_name, bus_name_len);
                     if (IS_ERR_OR_NULL(bus_type)) {
                         this->state = udmabuf_manager_parse_error;
                         goto failed;
