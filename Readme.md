@@ -82,12 +82,20 @@ If the `bus` option is omitted, the platform bus is searched.
 The `dma-mask` option specifies the number of bits in the dma mask value.
 If the parent device is specified by the `device` option, the `dma-mask` option is ignored because the dma-mask set for the parent device takes precedence.
 
-##### `quirk-mmap` option
+##### `quirk-mmap-on` option
 
-The `quirk-mmap` option specifies the quirk-mmap-mode of u-dma-buf.
-If the `quirk-mmap` is 1, u-dma-buf's own quirk mmap() is prohibited.
-If the `quirk-mmap` is 2, use u-dma-buf's own quirk mmap().
-If the `quirk-mmap` is 3, automatically selects whether or not to use u-dma-buf's own quirk mmap().
+The `quirk-mmap-on` option specifies use u-dma-buf's own quirk mmap().
+If this option is omitted, quirk-mmap-mode follows the u-dma-buf default.
+
+##### `quirk-mmap-off` option
+
+The `quirk-mmap-off` option specifies u-dma-buf's own quirk mmap() is prohibited.
+If this option is omitted, quirk-mmap-mode follows the u-dma-buf default.
+
+##### `quirk-mmap-auto` option
+
+The `quirk-mmap-auto` option specifies the automatically selects whether or not to use u-dma-buf's own quirk mmap().
+If this option is omitted, quirk-mmap-mode follows the u-dma-buf default.
 
 ### Delete u-dma-buf
 
