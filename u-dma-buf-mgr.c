@@ -51,7 +51,7 @@ MODULE_DESCRIPTION("U-dma-buf(User space mappable DMA buffer device driver) Mana
 MODULE_AUTHOR("ikwzm");
 MODULE_LICENSE("Dual BSD/GPL");
 
-#define DRIVER_VERSION     "4.3.0"
+#define DRIVER_VERSION     "4.4.0"
 #define DRIVER_NAME        "u-dma-buf-mgr"
 
 /**
@@ -152,7 +152,12 @@ static inline u64 CREATE_OPTION_##name(u64 option, int value) \
           u64 set_bit  = (((value) & mask_bit) << (lo));      \
     return (option & ~clr_bit) | set_bit;                     \
 }
-DEFINE_CREATE_OPTION_FIELD(DMA_MASK_SIZE,0,7)
+DEFINE_CREATE_OPTION_FIELD(DMA_MASK_SIZE  , 0,7 )
+DEFINE_CREATE_OPTION_FIELD(QUIRK_MMAP_MODE,10,11)
+
+#define  QUIRK_MMAP_MODE_ALWAYS_OFF  1
+#define  QUIRK_MMAP_MODE_ALWAYS_ON   2
+#define  QUIRK_MMAP_MODE_AUTO        3
 
 /**
  * udmabuf_manager_parse() - udmabuf manager parse buffer.
@@ -261,6 +266,18 @@ static int udmabuf_manager_parse(struct udmabuf_manager_data *this, const char _
                         goto failed;
                     }
                     this->option = CREATE_OPTION_DMA_MASK_SIZE(this->option, value);
+                    continue;
+                }
+                if (strncmp(ptr, "quirk-mmap-auto", 15) == 0) {
+                    this->option = CREATE_OPTION_QUIRK_MMAP_MODE(this->option, QUIRK_MMAP_MODE_AUTO);
+                    continue;
+                }
+                if (strncmp(ptr, "quirk-mmap-off" , 14) == 0) {
+                    this->option = CREATE_OPTION_QUIRK_MMAP_MODE(this->option, QUIRK_MMAP_MODE_ALWAYS_OFF);
+                    continue;
+                }
+                if (strncmp(ptr, "quirk-mmap-on"  , 13) == 0) {
+                    this->option = CREATE_OPTION_QUIRK_MMAP_MODE(this->option, QUIRK_MMAP_MODE_ALWAYS_ON);
                     continue;
                 }
                 if (kstrtoull(ptr, 0, &value) == 0) {
