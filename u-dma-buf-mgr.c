@@ -51,7 +51,7 @@ MODULE_DESCRIPTION("U-dma-buf(User space mappable DMA buffer device driver) Mana
 MODULE_AUTHOR("ikwzm");
 MODULE_LICENSE("Dual BSD/GPL");
 
-#define DRIVER_VERSION     "4.4.4"
+#define DRIVER_VERSION     "4.5.0"
 #define DRIVER_NAME        "u-dma-buf-mgr"
 
 /**
