@@ -26,7 +26,7 @@ Usage
 ```console
 shell$ sudo sh -c "echo 'create udmabuf8 0x10000' > /dev/u-dma-buf-mgr"
 [16463.308265] u-dma-buf-mgr: create udmabuf8 size=65536
-[16463.311147] u-dma-buf udmabuf8: driver version = 4.3.0
+[16463.311147] u-dma-buf udmabuf8: driver version = 4.6.1
 [16463.311148] u-dma-buf udmabuf8: major number   = 238
 [16463.311149] u-dma-buf udmabuf8: minor number   = 0
 [16463.311149] u-dma-buf udmabuf8: phys address   = 0x000000007b410000
@@ -35,13 +35,16 @@ shell$ sudo sh -c "echo 'create udmabuf8 0x10000' > /dev/u-dma-buf-mgr"
 [16463.311151] u-dma-buf udmabuf8: dma bus        = platform
 [16463.311151] u-dma-buf udmabuf8: dma coherent   = 1
 [16463.311152] u-dma-buf udmabuf8: dma mask       = 0x00000000ffffffff
+[16463.311152] u-dma-buf udmabuf8: mmap mode      = 2
+[16463.311152] u-dma-buf udmabuf8: mmap           = quirk-mmap
+[16463.311152] u-dma-buf udmabuf8: mmap pages     = NONE
 [16463.311152] u-dma-buf u-dma-buf.1.auto: driver installed.
 ```
 
 ```console
 shell$ sudo sh -c "echo 'create udmabuf9 0x10000 bus=pci device=0000:00:18.7' > /dev/u-dma-buf-mgr"
 [18758.896248] u-dma-buf-mgr: create udmabuf9 size=65536
-[18758.899611] u-dma-buf udmabuf0: driver version = 4.3.0
+[18758.899611] u-dma-buf udmabuf0: driver version = 4.6.1
 [18758.899612] u-dma-buf udmabuf0: major number   = 238
 [18758.899613] u-dma-buf udmabuf0: minor number   = 0
 [18758.899614] u-dma-buf udmabuf0: phys address   = 0x000000007b410000
@@ -50,6 +53,8 @@ shell$ sudo sh -c "echo 'create udmabuf9 0x10000 bus=pci device=0000:00:18.7' > 
 [18758.899615] u-dma-buf udmabuf0: dma bus        = pci
 [18758.899626] u-dma-buf udmabuf0: dma coherent   = 1
 [18758.899628] u-dma-buf udmabuf0: dma mask       = 0x00000000ffffffff
+[18758.899628] u-dma-buf udmabuf0: mmap mode      = 3
+[18758.899628] u-dma-buf udmabuf0: mmap           = dma_mmap_coherent
 [18758.899628] u-dma-buf: driver installed.
 ```
 
@@ -172,18 +177,12 @@ Set KBUILD_EXTRA_SYMBOLS variable to Module.symvers created by u-dma-buf
 If you have a cross-compilation environment for target system, you can compile with:
 
 ```console
-shell$ make ARCH=arm KERNEL_SRC=/home/fpga/work/FPGA-SoC-Linux-Kernel-6.1/linux-6.1.33-armv7-fpga KBUILD_EXTRA_SYMBOLS=/home/fpga/work/udmabuf/Module.symvers 
-make -C /home/fpga/work/FPGA-SoC-Linux-Kernel-6.1/linux-6.1.33-armv7-fpga ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- M=/home/fpga/work/u-dma-buf-mgr CONFIG_U_DMA_BUF_MGR=m 
-make[1]: Entering directory '/home/fpga/work/FPGA-SoC-Linux-Kernel-6.1/linux-6.1.33-armv7-fpga'
-  CC [M]  /home/fpga/work/u-dma-buf-mgr/u-dma-buf-mgr.o
-  MODPOST /home/fpga/work/u-dma-buf-mgr/Module.symvers
-  CC [M]  /home/fpga/work/u-dma-buf-mgr/u-dma-buf-mgr.mod.o
-  LD [M]  /home/fpga/work/u-dma-buf-mgr/u-dma-buf-mgr.ko
-make[1]: Leaving directory '/home/fpga/work/FPGA-SoC-Linux-Kernel-6.1/linux-6.1.33-armv7-fpga'
+shell$ make ARCH=arm KERNEL_SRC=/home/fpga/src/linux-5.0.21-armv7-fpga KBUILD_EXTRA_SYMBOLS=/home/fpga/src/udmabuf/Module.symvers all
 ```
+
 The ARCH variable specifies the architecture name.    
 The KERNEL_SRC variable specifies the Linux Kernel source code path.
-The KBUILD_EXTRA_SYMBOLS variable sepcifies the u-dma-buf Module.symbers file.
+The KBUILD_EXTRA_SYMBOLS variable sepcifies the u-dma-buf Module.symbers file.   
 
 ### Self Compile
 
