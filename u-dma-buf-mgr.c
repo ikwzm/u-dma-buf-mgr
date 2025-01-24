@@ -62,10 +62,7 @@ MODULE_LICENSE("Dual BSD/GPL");
  * * u_dma_buf_device_remove()           - Remove u-dma-buf device for in-kernel.
  * * u_dma_buf_find_available_bus_type() - Find available bus_type by name.
  */
-struct device*   u_dma_buf_device_search(const char* name, int id);
-struct device*   u_dma_buf_device_create(const char* name, int id, size_t size, u64 option, struct device* parent);
-int              u_dma_buf_device_remove(struct device *dev);
-struct bus_type* u_dma_buf_find_available_bus_type(char* name, int name_len);
+#include "u-dma-buf-funcs.h"
 
 /**
  * DOC: udmabuf manager device
