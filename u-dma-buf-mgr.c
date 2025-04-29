@@ -51,7 +51,7 @@ MODULE_DESCRIPTION("U-dma-buf(User space mappable DMA buffer device driver) Mana
 MODULE_AUTHOR("ikwzm");
 MODULE_LICENSE("Dual BSD/GPL");
 
-#define DRIVER_VERSION     "5.1.0"
+#define DRIVER_VERSION     "5.3.0"
 #define DRIVER_NAME        "u-dma-buf-mgr"
 
 /**
@@ -302,7 +302,8 @@ static int udmabuf_manager_parse(struct udmabuf_manager_data *this, const char _
                     this->state = udmabuf_manager_bind_error;
                     goto failed;
                 }
-                this->parent = parent;
+                this->parent = get_device(parent);
+                put_device(parent);
             }
         }
     }
@@ -380,9 +381,11 @@ static ssize_t udmabuf_manager_file_write(struct file* file, const char __user* 
                 if (IS_ERR_OR_NULL(dev)) {
                     result = (IS_ERR(dev)) ? PTR_ERR(dev) : -ENODEV;
                     pr_err(DRIVER_NAME ": create error: %s result = %d\n", this->device_name, result);
+                    put_device(this->parent);
                     udmabuf_manager_state_clear(this);
                     goto failed;
                 }
+                put_device(this->parent);
                 udmabuf_manager_state_clear(this);
                 break;
             case udmabuf_manager_delete_command :
