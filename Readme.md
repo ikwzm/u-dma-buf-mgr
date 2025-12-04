@@ -26,7 +26,7 @@ Usage
 ```console
 shell$ sudo sh -c "echo 'create udmabuf8 0x10000' > /dev/u-dma-buf-mgr"
 [16463.308265] u-dma-buf-mgr: create udmabuf8 size=65536
-[16463.311147] u-dma-buf udmabuf8: driver version = 5.3.0
+[16463.311147] u-dma-buf udmabuf8: driver version = 5.3.1
 [16463.311148] u-dma-buf udmabuf8: major number   = 238
 [16463.311149] u-dma-buf udmabuf8: minor number   = 0
 [16463.311149] u-dma-buf udmabuf8: phys address   = 0x000000007b410000
@@ -44,7 +44,7 @@ shell$ sudo sh -c "echo 'create udmabuf8 0x10000' > /dev/u-dma-buf-mgr"
 ```console
 shell$ sudo sh -c "echo 'create udmabuf9 0x10000 bus=pci device=0000:00:18.7' > /dev/u-dma-buf-mgr"
 [18758.896248] u-dma-buf-mgr: create udmabuf9 size=65536
-[18758.899611] u-dma-buf udmabuf0: driver version = 5.3.0
+[18758.899611] u-dma-buf udmabuf0: driver version = 5.3.1
 [18758.899612] u-dma-buf udmabuf0: major number   = 238
 [18758.899613] u-dma-buf udmabuf0: minor number   = 0
 [18758.899614] u-dma-buf udmabuf0: phys address   = 0x000000007b410000
