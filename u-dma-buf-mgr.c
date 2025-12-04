@@ -51,7 +51,7 @@ MODULE_DESCRIPTION("U-dma-buf(User space mappable DMA buffer device driver) Mana
 MODULE_AUTHOR("ikwzm");
 MODULE_LICENSE("Dual BSD/GPL");
 
-#define DRIVER_VERSION     "5.3.0"
+#define DRIVER_VERSION     "5.3.1"
 #define DRIVER_NAME        "u-dma-buf-mgr"
 
 /**
@@ -157,6 +157,12 @@ DEFINE_CREATE_OPTION_FIELD(QUIRK_MMAP_MODE,10,12)
 #define  QUIRK_MMAP_MODE_AUTO        3
 #define  QUIRK_MMAP_MODE_PAGE        4
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 12, 0)
+#define BUS_TYPE_T const struct bus_type
+#else
+#define BUS_TYPE_T struct bus_type
+#endif
+
 /**
  * udmabuf_manager_parse() - udmabuf manager parse buffer.
  * @this:       Pointer to the udmabuf manager data structure.
@@ -221,7 +227,7 @@ static int udmabuf_manager_parse(struct udmabuf_manager_data *this, const char _
             this->device_name = ptr;
         }
         if (this->state == udmabuf_manager_create_command) {
-            struct bus_type* bus_type    = NULL;
+            BUS_TYPE_T*      bus_type    = NULL;
             struct device*   parent      = NULL;
             char*            parent_name = NULL;
             u64              value;
@@ -239,7 +245,7 @@ static int udmabuf_manager_parse(struct udmabuf_manager_data *this, const char _
                 if (strncmp(ptr, "bus=", 4) == 0) {
                     char* bus_name     = ptr+4;
                     int   bus_name_len = strlen(bus_name);
-                    bus_type = u_dma_buf_find_available_bus_type(bus_name, bus_name_len);
+                    bus_type = (BUS_TYPE_T*)u_dma_buf_find_available_bus_type(bus_name, bus_name_len);
                     if (IS_ERR_OR_NULL(bus_type)) {
                         this->state = udmabuf_manager_parse_error;
                         goto failed;
