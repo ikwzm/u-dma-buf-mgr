@@ -1,6 +1,6 @@
 /*********************************************************************************
  *
- *       Copyright (C) 2015-2025 Ichiro Kawazome
+ *       Copyright (C) 2015-2026 Ichiro Kawazome
  *       All rights reserved.
  * 
  *       Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ MODULE_DESCRIPTION("U-dma-buf(User space mappable DMA buffer device driver) Mana
 MODULE_AUTHOR("ikwzm");
 MODULE_LICENSE("Dual BSD/GPL");
 
-#define DRIVER_VERSION     "5.3.1"
+#define DRIVER_VERSION     "5.3.2"
 #define DRIVER_NAME        "u-dma-buf-mgr"
 
 /**
@@ -329,8 +329,8 @@ static int udmabuf_manager_file_open(struct inode *inode, struct file *file)
     int status = 0;
 
     this = kzalloc(sizeof(*this), GFP_KERNEL);
-    if (IS_ERR_OR_NULL(this)) {
-        status = PTR_ERR(this);
+    if (this == NULL) {
+        status = -ENOMEM;
     } else {
         status = 0;
         udmabuf_manager_state_clear(this);
