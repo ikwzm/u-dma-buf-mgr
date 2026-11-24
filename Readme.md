@@ -26,7 +26,7 @@ Usage
 ```console
 shell$ sudo sh -c "echo 'create udmabuf8 0x10000' > /dev/u-dma-buf-mgr"
 [16463.308265] u-dma-buf-mgr: create udmabuf8 size=65536
-[16463.311147] u-dma-buf udmabuf8: driver version = 5.3.1
+[16463.311147] u-dma-buf udmabuf8: driver version = 5.9.0
 [16463.311148] u-dma-buf udmabuf8: major number   = 238
 [16463.311149] u-dma-buf udmabuf8: minor number   = 0
 [16463.311149] u-dma-buf udmabuf8: phys address   = 0x000000007b410000
@@ -44,7 +44,7 @@ shell$ sudo sh -c "echo 'create udmabuf8 0x10000' > /dev/u-dma-buf-mgr"
 ```console
 shell$ sudo sh -c "echo 'create udmabuf9 0x10000 bus=pci device=0000:00:18.7' > /dev/u-dma-buf-mgr"
 [18758.896248] u-dma-buf-mgr: create udmabuf9 size=65536
-[18758.899611] u-dma-buf udmabuf0: driver version = 5.3.1
+[18758.899611] u-dma-buf udmabuf0: driver version = 5.9.0
 [18758.899612] u-dma-buf udmabuf0: major number   = 238
 [18758.899613] u-dma-buf udmabuf0: minor number   = 0
 [18758.899614] u-dma-buf udmabuf0: phys address   = 0x000000007b410000
@@ -101,6 +101,52 @@ If this option is omitted, quirk-mmap-mode follows the u-dma-buf default.
 
 The `quirk-mmap-auto` option specifies the automatically selects whether or not to use u-dma-buf's own quirk mmap().
 If this option is omitted, quirk-mmap-mode follows the u-dma-buf default.
+
+##### `sync-mode-non-cache` option
+
+The `sync-mode-non-cache` option sets `sync_mode` to 1 in u-dma-buf.
+When `sync_mode=1`, the cache is disabled if the device file is opened with O_SYNC, and enabled otherwise.
+
+If this option is omitted, the default `sync_mode` setting of u-dma-buf is used.
+
+##### `sync-mode-always-non-cache` option
+
+The `sync-mode-always-non-cache` option sets `sync_mode` to 5 in u-dma-buf.
+When `sync_mode=5`, the cache is always disabled, regardless of whether the file is opened with `O_SYNC`.
+
+If this option is omitted, sync-mode follows the u-dma-buf default.
+
+##### `sync-mode-write-combine` option
+
+The `sync-mode-write-combine` option sets `sync_mode` to 2 in u-dma-buf.
+
+When `sync_mode=2`, the cache is disabled and write-combine is enabled for CPU writes to the DMA buffer, improving write performance, if the device file is opened with `O_SYNC`. Otherwise, the cache is enabled.
+
+If this option is omitted, the default `sync_mode` setting of u-dma-buf is used.
+
+##### `sync-mode-always-write-combine` option
+
+The `sync-mode-always-write-combine` option sets `sync_mode` to 6 in u-dma-buf.
+
+When `sync_mode=6`, the cache is disabled and write-combine is enabled for CPU writes to the DMA buffer, improving write performance, regardless of whether the file is opened with `O_SYNC`.
+
+If this option is omitted, the default `sync_mode` setting of u-dma-buf is used.
+
+##### `sync-mode-dma-coherent` option
+
+The `sync-mode-dma-coherent` option sets `sync_mode` to 3 in u-dma-buf.
+
+When `sync_mode=3`, the cache is set to DMA-coherent mode if the device file is opened with `O_SYNC`. However, DMA-coherent mode is currently not used. If the device file is opened without `O_SYNC`, the cache is enabled.
+
+If this option is omitted, the default `sync_mode` setting of u-dma-buf is used.
+
+##### `sync-mode-always-dma-coherent` option
+
+The `sync-mode-always-dma-coherent` option sets `sync_mode` to 7 in u-dma-buf.
+
+When `sync_mode=7`, the cache is set to DMA-coherent mode regardless of whether the device file is opened with `O_SYNC`. However, DMA-coherent mode is currently not used.
+
+If this option is omitted, the default `sync_mode` setting of u-dma-buf is used.
 
 ### Delete u-dma-buf
 
